@@ -21,10 +21,11 @@ pipeline {
             }
         }
         stage('Test'){
-            steps{
+            steps {
                 sh '''
                     cd build
                     ls -l index.html
+                    cd ..
                     npm install
                     npm test
                 '''
