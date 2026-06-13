@@ -21,9 +21,9 @@ pipeline {
             }
         }
         */
-        stage('Test'){
+        stage('Test') {
             paralel {
-                stage('Unit Test'){
+                stage('Unit Test') {
                     agent {
                         docker {
                             image 'node:18-alpine'
@@ -40,7 +40,7 @@ pipeline {
                         '''
                     }
                 }
-                stage('E2E'){
+                stage('E2E') {
                     agent {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.49.1-noble'
@@ -56,14 +56,14 @@ pipeline {
                             npx playwright test --reporter=html
                         '''
                         }
+                    post {
+                        always {
+                            junit 'jest-results/junit.xml'
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            }
+                        }
+                    }
                     }
                 }
             }
         }
-    post {
-        always {
-            junit 'jest-results/junit.xml'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-            }
-        }
-    }
