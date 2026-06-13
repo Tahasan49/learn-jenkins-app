@@ -70,6 +70,7 @@ pipeline {
 
                     post {
                         always {
+                            junit 'jest-results/junit.xml'
                             publishHTML([
                                 allowMissing: false,
                                 alwaysLinkToLastBuild: false,
