@@ -54,7 +54,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                            npm
+                            npm ci
                             npm install -g serve
                             serve -s build &
                             sleep 10
