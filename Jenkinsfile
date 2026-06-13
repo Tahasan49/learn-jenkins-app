@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         /*
         stage('Build') {
@@ -22,50 +21,25 @@ pipeline {
             }
         }
         */
-
         stage('Test') {
-            parallel {
+            paralel {
                 stage('Unit Test') {
                     agent {
                         docker {
                             image 'node:18-alpine'
                             reuseNode true
+                            }
                         }
-                    }
-
                     steps {
                         sh '''
-                            ls -la
-
-                            if [ -f build/index.html ]; then
-                                echo "build/index.html var"
-                            else
-                                echo "build/index.html yok"
-                            fi
-
+                            cd build
+                            ls -l index.html
+                            cd ..
                             npm ci
                             npm test
                         '''
                     }
-
-                    post {
-                        always {
-                            junit allowEmptyResults: true, testResults: 'jest-results/junit.xml'
-
-                            publishHTML([
-                                allowMissing: true,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: false,
-                                reportDir: 'playwright-report',
-                                reportFiles: 'index.html',
-                                reportName: 'Playwright HTML Report',
-                                reportTitles: '',
-                                useWrapperFileDirectly: true
-                            ])
-                        }
-                    }
                 }
-
                 stage('E2E') {
                     agent {
                         docker {
@@ -73,42 +47,23 @@ pipeline {
                             reuseNode true
                         }
                     }
-
                     steps {
                         sh '''
-                            ls -la
-
-                            if [ ! -f build/index.html ]; then
-                                echo "HATA: build/index.html bulunamadı. Önce npm run build çalışmalı."
-                                exit 1
-                            fi
-
                             npm install -g serve
                             serve -s build &
                             sleep 10
-
-                            npx playwright test --reporter=html,junit
+                            npx playwright test
+                            npx playwright test --reporter=html
                         '''
-                    }
-
+                        }
                     post {
                         always {
-                            junit allowEmptyResults: true, testResults: 'test-results/*.xml'
-
-                            publishHTML([
-                                allowMissing: true,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: true,
-                                reportDir: 'playwright-report',
-                                reportFiles: 'index.html',
-                                reportName: 'Playwright HTML Report',
-                                reportTitles: '',
-                                useWrapperFileDirectly: true
-                            ])
+                            junit 'jest-results/junit.xml'
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
