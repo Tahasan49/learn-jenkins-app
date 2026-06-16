@@ -97,6 +97,9 @@ pipeline {
                             reuseNode true
                         }
                     }
+                    environment{
+                        CI_ENVIRONMENT_URL = 'https://splendid-dolphin-fdc580.netlify.app'
+                    }
                     steps {
                         sh '''
                             npx playwright test --reporter=html
@@ -107,9 +110,6 @@ pipeline {
                             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Report', reportTitles: '', useWrapperFileDirectly: true])
                             }
                         }
-                    environment{
-                        CI_ENVIRONMENT_URL = 'https://splendid-dolphin-fdc580.netlify.app'
-                    }
             }
         }
 }
