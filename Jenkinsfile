@@ -66,7 +66,7 @@ pipeline {
                         }
                     post {
                         always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Local Report', reportTitles: '', useWrapperFileDirectly: true])
                             }
                         }
                 }
@@ -90,5 +90,26 @@ pipeline {
                 '''
             }
         }
-    }
+        stage('Prod E2E') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.49.1-noble'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        sh '''
+                            npx playwright test --reporter=html
+                        '''
+                        }
+                    post {
+                        always {
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+                            }
+                        }
+                    environment{
+                        CI_ENVIRONMENT_URL = 'https://splendid-dolphin-fdc580.netlify.app'
+                    }
+            }
+        }
 }
