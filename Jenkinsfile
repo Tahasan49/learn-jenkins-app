@@ -72,6 +72,24 @@ pipeline {
                 }
             }
         }
+        stage('Deploy staging') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    echo 'Small change'
+                    npm install -g netlify-cli
+                    netlify --version
+                    echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
+                    netlify status
+                    netlify deploy --dir=build --no-build --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
+                '''
+            }
+        }
         stage('Deploy') {
             agent {
                 docker {
