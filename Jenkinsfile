@@ -90,7 +90,7 @@ pipeline {
                 '''
             }
         }
-        STAGE ('Approve') {
+        STAGE ('Approval') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
                 input 'Ready yo deploy?'
