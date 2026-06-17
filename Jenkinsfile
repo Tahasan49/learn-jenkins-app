@@ -101,20 +101,19 @@ pipeline {
                             reuseNode true
                         }
                     }
-                    environment{
-                        CI_ENVIRONMENT_URL = "${STAGING_URL}"
+            environment{
+                    CI_ENVIRONMENT_URL = "${STAGING_URL}"
+                }
+            steps {
+                sh '''
+                    npx playwright test --reporter=html
+                '''
+                }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E Report', reportTitles: '', useWrapperFileDirectly: true])
                     }
-                    steps {
-                        sh '''
-                            npx playwright test --reporter=html
-                        '''
-                        }
-                    post {
-                        always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E Report', reportTitles: '', useWrapperFileDirectly: true])
-                            }
-                        }
-            }
+                }
         }
         stage ('Approval') {
             steps {
@@ -161,6 +160,6 @@ pipeline {
                             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E Report', reportTitles: '', useWrapperFileDirectly: true])
                             }
                         }
-            }
         }
+    }
 }
