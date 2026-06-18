@@ -81,7 +81,7 @@ pipeline {
         stage('Deploy Staging') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.49.1-noble'
+                    image 'my-playwright'
                             reuseNode true
                         }
                     }
@@ -90,7 +90,6 @@ pipeline {
                 }
             steps {
                 sh '''
-                    npm install -g netlify-cli node-jq
                     netlify --version
                     echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
                     netlify status
@@ -117,7 +116,7 @@ pipeline {
         stage('Deploy Prod') {
                     agent {
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.49.1-noble'
+                            image 'my-playwright'
                             reuseNode true
                         }
                     }
@@ -127,7 +126,6 @@ pipeline {
                     steps {
                         sh '''
                             node --version
-                            npm install -g netlify-cli
                             netlify --version
                             echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                             netlify status
